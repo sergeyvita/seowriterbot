@@ -4,7 +4,7 @@ import os
 
 app = Flask(__name__)
 
-# Получаем ключи из переменных окружения
+# Получаем ключ из переменных окружения Render
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 @app.route("/generate", methods=["POST"])
@@ -19,13 +19,21 @@ def generate():
         return jsonify({"error": "No chunks provided"}), 400
 
     messages = [
-        {"role": "system", "content": "Ты опытный копирайтер. Получи данные о жилом комплексе по частям. Не пиши статью, пока не получишь команду."}
+        {
+            "role": "system",
+            "content": "Ты опытный копирайтер. Получи данные о жилом комплексе по частям. Не пиши статью, пока не получишь команду."
+        }
     ]
 
     for index, chunk in enumerate(chunks):
-        messages.append({"role": "user", "content": f"Часть данных №{index+1}:
-{chunk}"})
-        messages.append({"role": "assistant", "content": f"Принял часть №{index+1}"})
+        messages.append({
+            "role": "user",
+            "content": f"Часть данных №{index + 1}:\n{chunk}"
+        })
+        messages.append({
+            "role": "assistant",
+            "content": f"Принял часть №{index + 1}"
+        })
 
     messages.append({
         "role": "user",
@@ -41,7 +49,6 @@ def generate():
         )
         result = response["choices"][0]["message"]["content"]
         return jsonify({"article": result})
-
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

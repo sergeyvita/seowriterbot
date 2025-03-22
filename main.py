@@ -4,7 +4,7 @@ import os
 
 app = Flask(__name__)
 
-# Получаем ключ из переменных окружения Render
+# Получаем ключ из переменных окружения
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 @app.route("/generate", methods=["POST"])
@@ -28,11 +28,11 @@ def generate():
     for index, chunk in enumerate(chunks):
         messages.append({
             "role": "user",
-            "content": f"Часть данных №{index + 1}:\n{chunk}"
+            "content": f"Часть данных №{index+1}:\n{chunk}"
         })
         messages.append({
             "role": "assistant",
-            "content": f"Принял часть №{index + 1}"
+            "content": f"Принял часть №{index+1}"
         })
 
     messages.append({
@@ -49,9 +49,9 @@ def generate():
         )
         result = response["choices"][0]["message"]["content"]
         return jsonify({"article": result})
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
 
 @app.route("/healthz", methods=["GET"])
 def health():

@@ -13,7 +13,9 @@ def generate():
 
     print("=== [Render] Получен запрос /generate ===")
     print(f"Чанков: {len(chunks)}")
-
+print(f"=== Получен JSON от сайта ===")
+    print(f"Содержимое data: {data}")
+    
     if not OPENAI_API_KEY:
         print("ОШИБКА: Нет ключа OPENAI_API_KEY")
         return jsonify({"error": "OPENAI_API_KEY not set"}), 500

@@ -13,7 +13,7 @@ def generate():
 
     print("=== [Render] Получен запрос /generate ===")
     print(f"Чанков: {len(chunks)}")
-print(f"=== Получен JSON от сайта ===")
+    print(f"=== Получен JSON от сайта ===")
     print(f"Содержимое data: {data}")
     
     if not OPENAI_API_KEY:

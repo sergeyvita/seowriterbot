@@ -1,38 +1,27 @@
-import os
 from flask import Flask, request, jsonify
 from openai import OpenAI
+import os
 
 app = Flask(__name__)
 
-# Получаем API-ключ из переменной окружения
+# Получаем ключ API из переменной окружения
 openai_api_key = os.environ.get("OPENAI_API_KEY")
-
-# Инициализируем клиента OpenAI без аргумента 'proxies'
-client = OpenAI(api_key=openai_api_key)
+client = OpenAI(api_key=openai_api_key)  # Без proxies
 
 @app.route("/generate", methods=["POST"])
-def generate_article():
+def generate():
     try:
         data = request.get_json()
         chunks = data.get("chunks", [])
+        prompt = "\n\n".join(chunks)
 
-        if not chunks:
-            return jsonify({"error": "Нет данных для генерации"}), 400
-
-        prompt = "\n".join(chunks)
-
-        # Отправляем запрос в OpenAI
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "Ты пишешь SEO-оптимизированную статью о жилом комплексе для сайта в формате блога."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.7,
-            max_tokens=2048
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.7
         )
 
-        article = response.choices[0].message.content
+        article = response.choices[0].message.content.strip()
         return jsonify({"article": article})
 
     except Exception as e:

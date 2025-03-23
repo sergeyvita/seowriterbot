@@ -1,39 +1,39 @@
 import os
 from flask import Flask, request, jsonify
 from openai import OpenAI
-from openai.types.chat import ChatCompletionMessageParam
 
 app = Flask(__name__)
 
-# Настройка клиента OpenAI с API-ключом из переменных окружения
-client = OpenAI(
-    api_key=os.environ.get("OPENAI_API_KEY")
-)
+# Получаем API-ключ из переменной окружения
+openai_api_key = os.environ.get("OPENAI_API_KEY")
+
+# Инициализируем клиента OpenAI без аргумента 'proxies'
+client = OpenAI(api_key=openai_api_key)
 
 @app.route("/generate", methods=["POST"])
-def generate():
+def generate_article():
     try:
         data = request.get_json()
         chunks = data.get("chunks", [])
 
-        # Собираем весь текст из чанков
-        full_text = "\n\n".join(chunks)
+        if not chunks:
+            return jsonify({"error": "Нет данных для генерации"}), 400
 
-        # Строим запрос к ChatGPT
-        messages: list[ChatCompletionMessageParam] = [
-            {"role": "system", "content": "Ты пишешь маркетинговую статью для сайта о жилом комплексе."},
-            {"role": "user", "content": full_text}
-        ]
+        prompt = "\n".join(chunks)
 
+        # Отправляем запрос в OpenAI
         response = client.chat.completions.create(
-            model="gpt-4",
-            messages=messages,
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "Ты пишешь SEO-оптимизированную статью о жилом комплексе для сайта в формате блога."},
+                {"role": "user", "content": prompt}
+            ],
             temperature=0.7,
-            max_tokens=1500
+            max_tokens=2048
         )
 
-        article_text = response.choices[0].message.content
-        return jsonify({"article": article_text})
+        article = response.choices[0].message.content
+        return jsonify({"article": article})
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500

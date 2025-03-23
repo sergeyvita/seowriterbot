@@ -1,12 +1,11 @@
 from flask import Flask, request, jsonify
-from openai import OpenAI
+import openai
 import os
 
 app = Flask(__name__)
 
 # Получаем ключ API из переменной окружения
-openai_api_key = os.environ.get("OPENAI_API_KEY")
-client = OpenAI(api_key=openai_api_key)  # Без proxies
+openai.api_key = os.environ.get("OPENAI_API_KEY")
 
 @app.route("/generate", methods=["POST"])
 def generate():
@@ -15,13 +14,13 @@ def generate():
         chunks = data.get("chunks", [])
         prompt = "\n\n".join(chunks)
 
-        response = client.chat.completions.create(
+        response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7
         )
 
-        article = response.choices[0].message.content.strip()
+        article = response.choices[0].message["content"].strip()
         return jsonify({"article": article})
 
     except Exception as e:

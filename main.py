@@ -1,18 +1,16 @@
 from flask import Flask, request, jsonify
-import os
 from openai import OpenAI
+import os
 
 app = Flask(__name__)
-
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-client = OpenAI(api_key=OPENAI_API_KEY)
 
 @app.route("/generate", methods=["POST"])
 def generate():
     data = request.get_json()
     chunks = data.get("chunks", [])
 
-    print("[Render] Получен запрос /generate")
+    print("=== [Render] Получен запрос /generate ===")
     print(f"Чанков: {len(chunks)}")
 
     if not OPENAI_API_KEY:
@@ -37,6 +35,7 @@ def generate():
     })
 
     try:
+        client = OpenAI(api_key=OPENAI_API_KEY)
         print("Запрос в OpenAI отправлен...")
         response = client.chat.completions.create(
             model="gpt-4",

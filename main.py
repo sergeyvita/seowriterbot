@@ -3,6 +3,7 @@ from openai import OpenAI
 import os
 
 app = Flask(__name__)
+
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 @app.route("/generate", methods=["POST"])

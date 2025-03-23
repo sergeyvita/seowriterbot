@@ -1,21 +1,20 @@
 from flask import Flask, request, jsonify
-import openai
 import os
+from openai import OpenAI
 
 app = Flask(__name__)
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 @app.route("/generate", methods=["POST"])
 def generate():
     data = request.get_json()
     chunks = data.get("chunks", [])
 
-    print("=== [Render] Получен запрос /generate ===")
+    print("[Render] Получен запрос /generate")
     print(f"Чанков: {len(chunks)}")
-    print(f"=== Получен JSON от сайта ===")
-    print(f"Содержимое data: {data}")
-    
+
     if not OPENAI_API_KEY:
         print("ОШИБКА: Нет ключа OPENAI_API_KEY")
         return jsonify({"error": "OPENAI_API_KEY not set"}), 500
@@ -38,14 +37,13 @@ def generate():
     })
 
     try:
-        openai.api_key = OPENAI_API_KEY
         print("Запрос в OpenAI отправлен...")
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-4",
             messages=messages,
             temperature=0.7
         )
-        result = response["choices"][0]["message"]["content"]
+        result = response.choices[0].message.content
         print("Ответ от OpenAI получен.")
         return jsonify({"article": result})
 

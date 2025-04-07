@@ -30,9 +30,34 @@ def generate():
         for chunk in chunks:
             cleaned = re.sub(r'^https?://\S+\.(?:jpg|jpeg|png|gif)\s*$', '', chunk, flags=re.MULTILINE)
             cleaned_chunks.append(cleaned.strip())
-          
-            
-        full_prompt = f"""
+
+        # Формируем список сообщений
+        messages = [
+            {"role": "system", "content": "Ты — профессиональный копирайтер, создающий статьи о жилых комплексах для публикации на сайте и в Яндекс.Дзене."},
+            {"role": "user", "content": "Сейчас я передам тебе данные о жилом комплексе. Не отвечай, пока не получишь все чанки."}
+        ]    
+
+        for chunk in cleaned_chunks:
+            messages.append({"role": "user", "content": chunk})
+
+        final_prompt = """
+Ответ верни строго в формате:
+===ELEMENT_NAME===
+{заголовок элемента}
+
+===META_TITLE===
+{мета тайтл}
+
+===META_KEYWORDS===
+{ключевые слова}
+
+===META_DESCRIPTION===
+{мета описание}
+
+===ARTICLE===
+{полный текст статьи}
+"""
+        instructions = """  
 Ты — профессиональный копирайтер, создающий статьи о жилых комплексах для публикации на сайте и в Яндекс.Дзене. Напиши статью о жилом комплексе только на основе переданных данных, не предумывай и не фантазируй. Пиши статью **исключительно на основе переданных данных**. Если чего-то нет в данных — **не упоминай это вообще**. Не придумывай названия, технологии или факты. Любая информация должна быть подтверждена в тексте входных данных.
 1. Цель статьи: рассказать потенциальным покупателям о жилом комплексе, заинтересовать, вызвать доверие, передать эмоции от будущей жизни в этом ЖК и мягко подтолкнуть к действию (перейти на сайт или связаться с отделом продаж).
 2. Тон: тёплый, профессиональный, дружелюбный.
@@ -89,34 +114,12 @@ def generate():
 *META KEYWORDS* — не менее 25 ключевых фраз через запятую.
 
 *META DESCRIPTION* — ёмкое описание статьи до 300 символов, не должно обрываться.
-
-Исходные данные:
-{prompt_text}
-
-Ответ верни строго в формате:
-
-===ELEMENT_NAME===
-{{заголовок элемента}}
-
-===META_TITLE===
-{{мета тайтл}}
-
-===META_KEYWORDS===
-{{ключевые слова}}
-
-===META_DESCRIPTION===
-{{мета описание}}
-
-===ARTICLE===
-{{полный текст статьи}}
 """
 
-        messages = []
-        for chunk in cleaned_chunks:
-            messages.append({"role": "user", "content": chunk})
-
-        messages.append({"role": "user", "content": full_prompt})
-            
+        messages.append({"role": "user", "content": "Готово. На основе этих данных сгенерируй статью строго по правилам:"})
+        messages.append({"role": "user", "content": instructions})
+        messages.append({"role": "user", "content": final_prompt})
+                    
         response = client.chat.completions.create(
             model="gpt-4o",
             messages=[{"role": "user", "content": full_prompt}],

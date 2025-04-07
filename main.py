@@ -122,7 +122,7 @@ def generate():
                     
         response = client.chat.completions.create(
             model="gpt-4o",
-            messages=[{"role": "user", "content": full_prompt}],
+            messages=messages,
             temperature=0.8
         )
 

@@ -165,7 +165,7 @@ def generate():
         response = client.chat.completions.create(
             model="gpt-4o",
             messages=messages,
-            temperature=0.8
+            temperature=0.8,
             max_tokens=4096
         )
 

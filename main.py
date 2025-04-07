@@ -119,7 +119,15 @@ def generate():
         messages.append({"role": "user", "content": "Готово. На основе этих данных сгенерируй статью строго по правилам:"})
         messages.append({"role": "user", "content": instructions})
         messages.append({"role": "user", "content": final_prompt})
-                    
+
+        print("=== SEO BOT | ОТПРАВКА В OPENAI ===")
+        for i, msg in enumerate(messages, start=1):
+            print(f"--- Сообщение {i} | роль: {msg['role']} ---")
+            print(msg['content'][:3000])  # Ограничим вывод до 3000 символов, чтобы не захламить лог
+            print("---------------")
+        print("=== КОНЕЦ ОТПРАВКИ В OPENAI ===")    
+        
+        
         response = client.chat.completions.create(
             model="gpt-4o",
             messages=messages,

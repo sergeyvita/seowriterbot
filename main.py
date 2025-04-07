@@ -18,6 +18,19 @@ def generate():
         # === Получаем чанки напрямую из запроса ===
         chunks = data.get("chunks", [])
 
+        # === АНАЛИЗ ЧАНКОВ ===
+        print("=== SEO BOT | АНАЛИЗ ЧАНКОВ ===")
+        total_chars = 0
+        for i, chunk in enumerate(chunks, 1):
+            chunk_text = str(chunk)
+            chunk_len = len(chunk_text)
+            total_chars += chunk_len
+            print(f"--- Чанк {i}: {chunk_len} символов ---")
+            print(f"Общий объём данных: {total_chars} символов ({total_chars / 1024:.2f} КБ)")
+        print("=== КОНЕЦ АНАЛИЗА ЧАНКОВ ===")  
+          
+              
+
         # === Логируем чанки ===
         print("=== SEO BOT | ПОЛУЧЕНЫ ЧАНКИ ===")
         print(f"Количество чанков: {len(chunks)}")

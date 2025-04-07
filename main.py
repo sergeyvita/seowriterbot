@@ -2,6 +2,8 @@ from flask import Flask, request, jsonify
 from openai import OpenAI
 import os
 import re
+import tiktoken
+
 
 app = Flask(__name__)
 
@@ -127,6 +129,25 @@ def generate():
             print("---------------")
         print("=== КОНЕЦ ОТПРАВКИ В OPENAI ===")    
         
+
+        # === Подсчёт токенов перед отправкой ===
+        encoding = tiktoken.encoding_for_model("gpt-4o")
+
+        # Подсчёт токенов в чанках
+        tokens_chunks = sum(len(encoding.encode(chunk)) for chunk in cleaned_chunks)
+
+        # Подсчёт токенов в промте
+        tokens_prompt = len(encoding.encode(full_prompt))
+
+        # Суммарно
+        total_tokens = tokens_chunks + tokens_prompt
+        print("=== ПОДСЧЁТ ТОКЕНОВ ===")
+        print(f"Чанки: {tokens_chunks} токенов")
+        print(f"Промт: {tokens_prompt} токенов")
+        print(f"Итого: {total_tokens} токенов")
+        print("=== КОНЕЦ ПОДСЧЁТА ===")
+        
+
         
         response = client.chat.completions.create(
             model="gpt-4o",

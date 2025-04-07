@@ -12,6 +12,7 @@ client = OpenAI(api_key=api_key)
 def generate():
     try:
         data = request.get_json()
+        
         def splitIntoChunks(text, max_length=3000):
             chunks = []
             current_chunk = ""
@@ -26,20 +27,20 @@ def generate():
                 chunks.append(current_chunk.strip())
             return chunks
             
-       # === Собираем полный текст из data ===
-       input_text = data.get("text", "")
+        # === Собираем полный текст из data ===
+        input_text = data.get("text", "")
 
-       # === Разбиваем на чанки ===
-       chunks = splitIntoChunks(input_text)
+        # === Разбиваем на чанки ===
+        chunks = splitIntoChunks(input_text)
 
-       # === Логируем чанки ===
-       print("=== SEO BOT | ПОЛУЧЕНЫ ЧАНКИ ===")
-       print(f"Количество чанков: {len(chunks)}")
-       for i, chunk in enumerate(chunks, start=1):
-           print(f"--- Чанк {i} ---")
-           print(chunk)
-           print("---------------")
-       print("=== КОНЕЦ ЛОГА ЧАНКОВ ===")    
+        # === Логируем чанки ===
+        print("=== SEO BOT | ПОЛУЧЕНЫ ЧАНКИ ===")
+        print(f"Количество чанков: {len(chunks)}")
+        for i, chunk in enumerate(chunks, start=1):
+            print(f"--- Чанк {i} ---")
+            print(chunk)
+            print("---------------")
+        print("=== КОНЕЦ ЛОГА ЧАНКОВ ===")    
                    
             
         full_prompt = f"""

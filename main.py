@@ -166,7 +166,7 @@ def generate():
             model="gpt-4o",
             messages=messages,
             temperature=0.8,
-            max_tokens=4096
+            max_tokens=8192
         )
 
         content = response.choices[0].message.content.strip()

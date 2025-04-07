@@ -13,7 +13,8 @@ def generate():
     try:
         data = request.get_json()
         chunks = data.get("chunks", [])
-        prompt_text = "\n\n".join(chunks)
+        prompt_text = "\n\n".join([f"CHUNK {i+1}:\n{chunk}" for i, chunk in enumerate(chunks)])
+
 
         print("=== SEO BOT | ПОЛУЧЕНЫ ЧАНКИ ===")
         print(f"Количество чанков: {len(chunks)}")

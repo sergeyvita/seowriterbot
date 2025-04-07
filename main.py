@@ -12,26 +12,12 @@ client = OpenAI(api_key=api_key)
 def generate():
     try:
         data = request.get_json()
-        
-        def splitIntoChunks(text, max_length=3000):
-            chunks = []
-            current_chunk = ""
-            for paragraph in text.split("\n\n"):
-                if len(current_chunk) + len(paragraph) + 2 <= max_length:
-                    current_chunk += paragraph + "\n\n"
-                else:
-                    if current_chunk.strip():
-                        chunks.append(current_chunk.strip())
-                    current_chunk = paragraph + "\n\n"    
-            if current_chunk.strip():
-                chunks.append(current_chunk.strip())
-            return chunks
-            
-        # === Собираем полный текст из data ===
-        input_text = data.get("text", "")
+                      
+        # === Получаем чанки напрямую из запроса ===
+        chunks = data.get("chunks", [])
 
-        # === Разбиваем на чанки ===
-        chunks = splitIntoChunks(input_text)
+        # === Собираем обратно текст из чанков ===
+        prompt_text = "\n\n".join(chunks)
 
         # === Логируем чанки ===
         print("=== SEO BOT | ПОЛУЧЕНЫ ЧАНКИ ===")
@@ -42,7 +28,7 @@ def generate():
             print("---------------")
         print("=== КОНЕЦ ЛОГА ЧАНКОВ ===")
         
-        prompt_text = "\n\n".join(chunks)           
+            
             
         full_prompt = f"""
 Ты — профессиональный копирайтер, создающий статьи о жилых комплексах для публикации на сайте и в Яндекс.Дзене. Напиши статью о жилом комплексе только на основе переданных данных, не предумывай и не фантазируй. Пиши статью **исключительно на основе переданных данных**. Если чего-то нет в данных — **не упоминай это вообще**. Не придумывай названия, технологии или факты. Любая информация должна быть подтверждена в тексте входных данных.

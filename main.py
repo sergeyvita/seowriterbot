@@ -8,6 +8,10 @@ app = Flask(__name__)
 
 api_key = os.environ.get("OPENAI_API_KEY")
 client = OpenAI(api_key=api_key)
+    api_key=api_key,
+    default_headers={"OpenAI-Beta": "assistants=v2"}
+)
+
 
 # ID ассистента (системный промт хранится там)
 ASSISTANT_ID = os.environ.get("ASSISTANT_ID")

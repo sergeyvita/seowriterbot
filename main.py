@@ -16,9 +16,6 @@ def generate():
         # === Получаем чанки напрямую из запроса ===
         chunks = data.get("chunks", [])
 
-        # === Собираем обратно текст из чанков ===
-        prompt_text = "\n\n".join(chunks)
-
         # === Логируем чанки ===
         print("=== SEO BOT | ПОЛУЧЕНЫ ЧАНКИ ===")
         print(f"Количество чанков: {len(chunks)}")
@@ -27,8 +24,13 @@ def generate():
             print(chunk)
             print("---------------")
         print("=== КОНЕЦ ЛОГА ЧАНКОВ ===")
-        
-            
+
+        # Удаляем строки с изображениями из чанков
+        cleaned_chunks = []
+        for chunk in chunks:
+            cleaned = re.sub(r'^https?://\S+\.(?:jpg|jpeg|png|gif)\s*$', '', chunk, flags=re.MULTILINE)
+            cleaned_chunks.append(cleaned.strip())
+          
             
         full_prompt = f"""
 Ты — профессиональный копирайтер, создающий статьи о жилых комплексах для публикации на сайте и в Яндекс.Дзене. Напиши статью о жилом комплексе только на основе переданных данных, не предумывай и не фантазируй. Пиши статью **исключительно на основе переданных данных**. Если чего-то нет в данных — **не упоминай это вообще**. Не придумывай названия, технологии или факты. Любая информация должна быть подтверждена в тексте входных данных.
@@ -109,6 +111,12 @@ def generate():
 {{полный текст статьи}}
 """
 
+        messages = []
+        for chunk in cleaned_chunks:
+            messages.append({"role": "user", "content": chunk})
+
+        messages.append({"role": "user", "content": full_prompt})
+            
         response = client.chat.completions.create(
             model="gpt-4o",
             messages=[{"role": "user", "content": full_prompt}],

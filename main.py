@@ -150,7 +150,7 @@ def generate():
         tokens_chunks = sum(len(encoding.encode(chunk)) for chunk in cleaned_chunks)
 
         # Подсчёт токенов в промте
-        tokens_prompt = len(encoding.encode(full_prompt))
+        tokens_prompt = sum(len(encoding.encode(msg["content"])) for msg in messages)
 
         # Суммарно
         total_tokens = tokens_chunks + tokens_prompt
@@ -166,6 +166,7 @@ def generate():
             model="gpt-4o",
             messages=messages,
             temperature=0.8
+            max_tokens=4096
         )
 
         content = response.choices[0].message.content.strip()

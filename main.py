@@ -12,19 +12,35 @@ client = OpenAI(api_key=api_key)
 def generate():
     try:
         data = request.get_json()
-        chunks = data.get("chunks", [])
-        prompt_text = "\n\n".join([f"CHUNK {i+1}:\n{chunk}" for i, chunk in enumerate(chunks)])
+        def splitIntoChunks(text, max_length=3000):
+            chunks = []
+            current_chunk = ""
+            for paragraph in text.split("\n\n"):
+                if len(current_chunk) + len(paragraph) + 2 <= max_length:
+                    current_chunk += paragraph + "\n\n"
+                else:
+                    if current_chunk.strip():
+                        chunks.append(current_chunk.strip())
+                    current_chunk = paragraph + "\n\n"    
+            if current_chunk.strip():
+                chunks.append(current_chunk.strip())
+            return chunks
+            
+       # === Собираем полный текст из data ===
+       input_text = data.get("text", "")
 
+       # === Разбиваем на чанки ===
+       chunks = splitIntoChunks(input_text)
 
-        print("=== SEO BOT | ПОЛУЧЕНЫ ЧАНКИ ===")
-        print(f"Количество чанков: {len(chunks)}")
-        for i, chunk in enumerate(chunks, start=1):
-            print(f"--- Чанк {i} ---")
-            print(chunk)
-            print("---------------")
-        print("=== КОНЕЦ ЛОГА ЧАНКОВ ===")
-
-        prompt_text = "\n\n".join(chunks)
+       # === Логируем чанки ===
+       print("=== SEO BOT | ПОЛУЧЕНЫ ЧАНКИ ===")
+       print(f"Количество чанков: {len(chunks)}")
+       for i, chunk in enumerate(chunks, start=1):
+           print(f"--- Чанк {i} ---")
+           print(chunk)
+           print("---------------")
+       print("=== КОНЕЦ ЛОГА ЧАНКОВ ===")    
+                   
             
         full_prompt = f"""
 Ты — профессиональный копирайтер, создающий статьи о жилых комплексах для публикации на сайте и в Яндекс.Дзене. Напиши статью о жилом комплексе только на основе переданных данных, не предумывай и не фантазируй. Пиши статью **исключительно на основе переданных данных**. Если чего-то нет в данных — **не упоминай это вообще**. Не придумывай названия, технологии или факты. Любая информация должна быть подтверждена в тексте входных данных.

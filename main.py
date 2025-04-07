@@ -10,7 +10,7 @@ api_key = os.environ.get("OPENAI_API_KEY")
 client = OpenAI(api_key=api_key)
 
 # ID ассистента (системный промт хранится там)
-ASSISTANT_ID = "asst_4RoCkWAoGVbrwn2ozczaqeFTcM"
+ASSISTANT_ID = os.environ.get("ASSISTANT_ID")
 
 @app.route("/generate", methods=["POST"])
 def generate():

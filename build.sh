@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-echo ">>> Удаление виртуальной среды (если есть)..."
-rm -rf .venv
-
 echo ">>> Очистка pip-кэша..."
 rm -rf ~/.cache/pip
 

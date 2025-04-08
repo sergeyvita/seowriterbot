@@ -1,19 +1,17 @@
-from flask import Flask, request, jsonify
-from openai import OpenAI
+import subprocess
 import os
 import re
 import time
-import subprocess; subprocess.run(["pip", "install", "--upgrade", "openai==1.25.0"])
+from flask import Flask, request, jsonify
 
+# Принудительная установка OpenAI, если версия вдруг не та
+subprocess.run(["pip", "install", "openai==1.25.0"], check=True)
+
+from openai import OpenAI
 
 app = Flask(__name__)
-
-# Инициализация OpenAI-клиента без параметров (используется переменная окружения OPENAI_API_KEY)
-
 client = OpenAI()
 
-
-# ID ассистента (системный промт хранится там)
 ASSISTANT_ID = os.environ.get("ASSISTANT_ID")
 
 @app.route("/generate", methods=["POST"])
@@ -32,7 +30,6 @@ def generate():
         print(f"Общий объём данных: {total_chars} символов ({total_chars / 1024:.2f} КБ)")
         print("=== КОНЕЦ АНАЛИЗА ЧАНКОВ ===")
 
-        # Удаление строк с изображениями
         cleaned_chunks = []
         for chunk in chunks:
             cleaned = re.sub(r'^https?://\S+\.(?:jpg|jpeg|png|gif)\s*$', '', chunk, flags=re.MULTILINE)
@@ -40,7 +37,6 @@ def generate():
 
         prompt = "\n\n".join(cleaned_chunks)
 
-        # === Ассистент OpenAI ===
         print("🔁 Создание потока")
         thread = client.beta.threads.create()
 
@@ -55,7 +51,7 @@ def generate():
         run = client.beta.threads.runs.create(
             thread_id=thread.id,
             assistant_id=ASSISTANT_ID,
-            extra_headers={"OpenAI-Beta": "assistants=v2"}  # <-- заголовок передаём здесь
+            extra_headers={"OpenAI-Beta": "assistants=v2"}
         )
 
         print("⏳ Ожидание ответа от ассистента...")
@@ -90,6 +86,7 @@ def generate():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)

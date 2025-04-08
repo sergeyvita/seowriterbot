@@ -9,10 +9,11 @@ subprocess.run(["pip", "install", "openai==1.25.0"], check=True)
 
 from openai import OpenAI
 
-app = Flask(__name__)
-client = OpenAI()
+client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 ASSISTANT_ID = os.environ.get("ASSISTANT_ID")
+
+app = Flask(__name__)
 
 @app.route("/generate", methods=["POST"])
 def generate():

@@ -4,8 +4,11 @@ import re
 import time
 from flask import Flask, request, jsonify
 
+os.environ.pop("HTTP_PROXY", None)
+os.environ.pop("HTTPS_PROXY", None)
+
 # Принудительная установка OpenAI, если версия вдруг не та
-subprocess.run(["pip", "install", "openai==1.25.0"], check=True)
+subprocess.run(["pip", "install", "openai==1.25.1"], check=True)
 
 from openai import OpenAI
 

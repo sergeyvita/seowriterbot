@@ -6,13 +6,8 @@ import time
 
 app = Flask(__name__)
 
-api_key = os.environ.get("OPENAI_API_KEY")
-client = OpenAI(
-    api_key=api_key,
-    default_headers={"OpenAI-Beta": "assistants=v2"}
-)
-
-
+# Инициализация OpenAI-клиента без параметров (используется переменная окружения OPENAI_API_KEY)
+client = OpenAI()
 
 # ID ассистента (системный промт хранится там)
 ASSISTANT_ID = os.environ.get("ASSISTANT_ID")
@@ -55,7 +50,8 @@ def generate():
         print("🚀 Запуск ассистента")
         run = client.beta.threads.runs.create(
             thread_id=thread.id,
-            assistant_id=ASSISTANT_ID
+            assistant_id=ASSISTANT_ID,
+            extra_headers={"OpenAI-Beta": "assistants=v2"}  # <-- заголовок передаём здесь
         )
 
         print("⏳ Ожидание ответа от ассистента...")

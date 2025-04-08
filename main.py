@@ -3,6 +3,8 @@ from openai import OpenAI
 import os
 import re
 import time
+import subprocess; subprocess.run(["pip", "install", "--upgrade", "openai==1.25.0"])
+
 
 app = Flask(__name__)
 

@@ -3,16 +3,22 @@ import os
 import re
 import time
 from flask import Flask, request, jsonify
+from openai import OpenAI
+import httpx
 
 os.environ.pop("HTTP_PROXY", None)
 os.environ.pop("HTTPS_PROXY", None)
+os.environ.pop("http_proxy", None)
+os.environ.pop("https_proxy", None)
 
-# Принудительная установка OpenAI, если версия вдруг не та
-subprocess.run(["pip", "install", "openai==1.25.1"], check=True)
+# 🛡️ Создаём httpx клиент без прокси
+no_proxy_client = httpx.Client(proxies=None)
 
-from openai import OpenAI
+# 🧠 Создаём OpenAI клиент, передавая кастомный http-клиент
+client = OpenAI(
+    api_key=os.environ.get("OPENAI_API_KEY"),
+    http_client=no_proxy_client
 
-client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 ASSISTANT_ID = os.environ.get("ASSISTANT_ID")
 

@@ -18,7 +18,7 @@ no_proxy_client = httpx.Client(proxies=None)
 client = OpenAI(
     api_key=os.environ.get("OPENAI_API_KEY"),
     http_client=no_proxy_client
-
+)
 
 ASSISTANT_ID = os.environ.get("ASSISTANT_ID")
 

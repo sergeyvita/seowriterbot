@@ -12,7 +12,7 @@ os.environ.pop("http_proxy", None)
 os.environ.pop("https_proxy", None)
 
 # 🛡️ Создаём httpx клиент без прокси
-no_proxy_client = httpx.Client(proxies=None)
+no_proxy_client = httpx.Client()
 
 # 🧠 Создаём OpenAI клиент, передавая кастомный http-клиент
 client = OpenAI(

@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
 
-echo ">>> Удаляем старую версию openai (вручную)..."
+echo ">>> Удаление виртуальной среды (если есть)..."
+rm -rf .venv
+
+echo ">>> Очистка pip-кэша..."
 rm -rf ~/.cache/pip
+
+echo ">>> Удаление openai (на всякий случай)..."
 pip uninstall -y openai
 
-echo ">>> Устанавливаем openai 1.25.0 без кэша..."
+echo ">>> Установка правильной версии OpenAI..."
 pip install --no-cache-dir openai==1.25.0
 
 echo ">>> Установка остальных зависимостей..."
-pip install --no-cache-dir -r requirements.txt
+pip install --no-cache-dir flask==2.3.3 tiktoken
